@@ -1,6 +1,4 @@
 #!/bin/bash
-#sudo docker stop cryptoticker-web-1 cryptoticker-mongodb-1
-#sudo docker rm cryptoticker-web-1 cryptoticker-mongodb-1
-sudo docker stop cryptoticker-web-1
-sudo docker rm cryptoticker-web-1
-sudo docker rmi cryptoticker_web
+docker stop cryptoticker-web-1
+docker rm cryptoticker-web-1
+docker rmi cryptoticker_web
