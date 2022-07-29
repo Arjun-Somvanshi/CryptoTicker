@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = "*"
+pyjwt = "*"
+python-decouple = "*"
+pydantic = {extras = ["email"], version = "*"}
+bcrypt = "*"
 
 [dev-packages]
 
