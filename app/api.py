@@ -3,9 +3,7 @@ from fastapi import FastAPI, Body, Depends
 from app.auth.auth_handler import signJWT
 from app.auth.bearer import JWTBearer
 from app.auth.security import verify_password, hash_password
-from app.database import db
-import string
-import random
+from app.database import db, check_user, get_user, get_alert, update_user, update_alert, generate_alert_id
 
 users = [] # list of existing users
 alerts = [] # mapped from id -> alert object
@@ -52,10 +50,10 @@ async def fetch_alerts(email: EmailStr, filterStr: str = None) -> dict:
     return {"user": result}
 
 # For debugging and such, will delete later REMOVE ME (the function)
-@app.get("/user/fetch", tags=["Fetch All Users"])
-async def fetch_users() -> dict:
+@app.get("/user/fetch", tags=["Fetch User by EmailID"])
+async def fetch_user(email: EmailStr) -> dict:
     userCollection = db["users"]
-    u = userCollection.find_one()
+    u = userCollection.find_one({"email": email})
     return {"user": str(u)}
 
 @app.post("/user/signup", tags=["User Signup"])
@@ -76,38 +74,3 @@ async def user_login(user: LoginSchema = Body(...)):
         return signJWT(user.email)
     return {"error": "Wrong User Credentials!"} 
 
-'''Helper Functions'''
-def check_user(data: LoginSchema, signup = False):
-    userCollection = db["users"]
-    u = userCollection.find_one({'email': data.email})
-    if u != None:
-        if verify_password(data.password, u['password']):
-            return True
-        if signup:
-            return True
-    return False
-
-def get_user(user: UserSchema):
-    userCollection = db["users"]
-    u = userCollection.find_one({'email': user.email})
-    if verify_password(user.password, u['password']):
-        return u
-
-def get_alert(alert: AlertSchema):
-    alertCollection = db["alerts"]
-    a = alertCollection.find_one({"alert_id": alert.alert_id})
-    return a
-
-def update_user(user: UserSchema):
-        u = get_user(user)
-        newValues = {"$set": {"alerts": user.alerts}}
-        db["users"].update_one(u, newValues) 
-
-def update_alert(alert: AlertSchema, newValues):
-        a = get_alert(alert)
-        db["alerts"].update_one(a, newValues) 
-
-def generate_alert_id():
-    N = 8
-    res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
-    return str(res) 
