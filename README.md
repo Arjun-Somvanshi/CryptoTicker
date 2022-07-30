@@ -9,7 +9,11 @@ and then sends them an email when the target price is reached.
 * MongoDB
 * Docker
 
+### OS:
+* Arch Linux (5.18.3-arch1-1)
 
+Testing the app on a linux based distribution would be the easiest, non-unix like systems
+might misbehave.
 
 
 ## Run CryptoTicker
