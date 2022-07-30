@@ -50,8 +50,8 @@ async def delete_alert(targetAlert: AlertSchema) -> dict:
     update_user(user)
     return {"data": str(targetAlert) + " has been deleted"}
 
-#@app.get("/alerts/fetch", dependencies=[Depends(JWTBearer())], tags=["Fetch Alerts"])
-@app.get("/alerts/fetch", tags=["Fetch Alerts"])
+@app.get("/alerts/fetch", dependencies=[Depends(JWTBearer())], tags=["Fetch Alerts"])
+#@app.get("/alerts/fetch", tags=["Fetch Alerts"])
 async def fetch_alerts(email: EmailStr, filterStr: str = None) -> dict:
     alertCollection = db["alerts"]
     result = []
