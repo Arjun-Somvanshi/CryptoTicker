@@ -21,23 +21,23 @@ def check_user(data: LoginSchema, signup = False):
             return True
     return False
 
-def get_user(user: UserSchema):
+def get_user(user: dict):
     userCollection = db["users"]
-    u = userCollection.find_one({'email': user.email})
-    if verify_password(user.password, u['password']):
-        return u
+    u = userCollection.find_one({'email': user["email"]})
+    return u
 
-def get_alert(alert: AlertSchema):
+def get_alert(alert: dict):
     alertCollection = db["alerts"]
-    a = alertCollection.find_one({"alert_id": alert.alert_id})
+    a = alertCollection.find_one({"alert_id": alert["alert_id"]})
     return a
 
-def update_user(user: UserSchema):
+def update_user(user: dict):
         u = get_user(user)
-        newValues = {"$set": {"alerts": user.alerts}}
+        newValues = {"$set": {"alerts": user["alerts"]}}
+        print(type(newValues), type(u))
         db["users"].update_one(u, newValues) 
 
-def update_alert(alert: AlertSchema, newValues):
+def update_alert(alert: dict, newValues):
         a = get_alert(alert)
         db["alerts"].update_one(a, newValues) 
 

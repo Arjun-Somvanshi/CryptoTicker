@@ -12,6 +12,7 @@ pydantic = {extras = ["email"], version = "*"}
 bcrypt = "*"
 pymongo = "*"
 requests = "*"
+schedule = "*"
 
 [dev-packages]
 
