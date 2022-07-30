@@ -40,6 +40,7 @@ Run CryptoTicker with the provided run bash script
 The web server will run on the host: 0.0.0.0 and the port is 80. In your browser 
 just visit or click on: [0.0.0.0:80](http://0.0.0.0:80) to view the home page.
 
+## Suggested way of TESTING the API
 To access the interative API go to [0.0.0.0:80/docs](http://0.0.0.0:80/docs).
 
 There are other bash scripts provided in the project to automate rebuilding manually.
@@ -188,7 +189,10 @@ The `signJWT()` in `app/auth/auth_handler.py` handles signing based on `user_id`
 is the useremail, I have made that a unique attribute in the `userSchema` document. It also sets a 
 an expiry time for the token, and returns this.
 Similarly, `decodeJWT` takes a token string and verifies if it was signed by our secret key it 
-also checks if the token has expired or not.
+also checks if the token has expired or not. The `bearer` files holds the magic though,
+it is what assists us to verify the protcted route by confirming if the reques is authentic.
+FastAPI provides a basic validation class through `HTTPBearer`, the class is extended into what
+I am using in the `app/bearer.py`
 
 
 ## Password Hashing
@@ -196,3 +200,8 @@ also checks if the token has expired or not.
 that are being used to verify passwords and to store them securely. `bcrypt`
 provides round based hashing, I have set it to 14 rounds which makes it computationally 
 expensive for attackers to bruteforce in a given time.
+
+## Ticker
+I didn't have much time for studying the webSocket api of Binance, in the `app/ticker.py` I 
+have simply used `requests` to get the cost of Bitcoin from the coinmarketcap API endpoint
+provided in the problem statement.
