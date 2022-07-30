@@ -17,7 +17,7 @@ thread = Thread(target=execute_job, args=(logger,))
 thread.start()
 app = FastAPI()
 
-@app.get("/", tags=["Welcome to something"])
+@app.get("/", tags=["Welcome to CryptoTicker"])
 async def home() -> dict:
     return {"message": "Welcome to your crypto-assistant!"}
 
@@ -65,12 +65,14 @@ async def fetch_alerts(email: EmailStr, filterStr: str = None) -> dict:
     return {"user": result}
 
 # For debugging and such, will delete later REMOVE ME (the function)
+'''
 @app.get("/user/fetch", tags=["Fetch User by EmailID"])
 async def fetch_user(email: EmailStr) -> dict:
     logger.info("Fucking Finally we have logging now")
     userCollection = db["users"]
     u = userCollection.find_one({"email": email})
     return {"user": str(u)}
+'''
 
 @app.post("/user/signup", tags=["User Signup"])
 async def create_user(user: UserSchema):

@@ -56,40 +56,18 @@ class AlertSchema(BaseModel):
     status: str = Field(default="", title="The status of the alert: created/deleted/triggered")
     targetPrice: int = Field(gt=0, title="The target price at which the alert will get triggered")
     email: EmailStr 
-    class Config:
-        schema_extra = {
-                "example": {
-                    "status": "created",
-                    "targetPrice": 24000,
-                    "email": "arjunsomvanshi@gmail.com"
-                    }
-                }
 
 class UserSchema(BaseModel):
     username: str
     email: EmailStr 
     password: str 
     alerts: list
-    class Config:
-        schema_extra = {
-            "example": {
-                "username": "Arjun Somvanshi",
-                "email": "arjunsomvanshi@gmail.com",
-                "password": "usuallyStrongPassword",
-                "alerts": []
-            }
-        }
 
 class LoginSchema(BaseModel):
     email: EmailStr
     password: str
-    class Config:
-        schema_extra = {
-            "example": {
-                "email": "arjunsomvanshi@gmail.com",
-                "password": "usuallyStrongPassword"
-            }
-        }
+
+# Additional nested config class code is available in the app/models.py file
 ```
 
 These classes are the entities that we work with in the API and 
@@ -178,10 +156,43 @@ Takes the user email and filterStr and returns a list of alert documents (json o
 
 ## Sending Alerts
 Using the schedule package along with threading, we can achieve
-a thread which has reoccuring events.
+a thread which has re-occuring events.
 The event mentioned above in our case is: `job()` in the file
 `app/job_scheduler.py`. The function is scheduled to execute every
-20 seconds as of now, using the `get_bitcoin_price()` and database
+`20 seconds` as of now. Using the `get_bitcoin_price()` and database
 collection of `alerts` we compare the prices and log the events onto 
-the console and also send out an email using smtplib.
+the console and also send out an email using smtplib. The logs I have added can be a bit messy,
+I did not edit them out, but it's readable.
 
+In the `.env` file I have stored my google app-password, it's a dummy account, 
+and I learnt that .env is best practice in such scenarios. Basically we 
+use smptlib to make a connection to google's smpt port `587` and then we 
+pass in our credentials (email and app-password), this authenticates us and allows
+one to send emails. The parameters to the `send_email` function are attributes of the 
+`AlertSchema` object that need to be sent so that the email has some soul.
+
+## MongoDB
+I have experience with json files mostly so I chose this as my database,
+turned out to be a good decision. MongoDB is a no-sql database, along with 
+it's docker container running alongside my FastAPI, I was able to connect
+after a few hours of blood and sweat. Have a look at the helper functions
+that are using the `pymongo` API to make a connection and interact with the database,
+it's the usual CRUD operations.
+
+## JWT Bearer Tokens
+I have used `pyJWT` and `python-decouple` to implement this feature.
+The JWT handler is responsible for signing the tokens and also for 
+encoding/decoding. The `.env` file has the 24-Byte Key (192 bits) which is a strong key,
+this key is supposed to be a secret since it will be used for signing tokens.
+The `signJWT()` in `app/auth/auth_handler.py` handles signing based on `user_id` which in my case
+is the useremail, I have made that a unique attribute in the `userSchema` document. It also sets a 
+an expiry time for the token, and returns this.
+Similarly, `decodeJWT` takes a token string and verifies if it was signed by our secret key it 
+also checks if the token has expired or not.
+
+
+## Password Hashing
+`app/security.py` is responsible for the cryptographic hash functions 
+that are being used to verify passwords and to store them securely. `bcrypt`
+provides round based hashing, I have set it to 14 rounds which makes it computationally 
+expensive for attackers to bruteforce in a given time.
