@@ -3,6 +3,7 @@ import time
 from app.database import db, update_alert, update_user, get_user
 from app.ticker import get_bitcoin_price
 from app.model import AlertSchema, UserSchema
+from app.sendemails import send_email
 
 def update_alert_and_user(targetAlert: dict):
     update_alert(targetAlert, {"$set": {"status": "triggered"}})
@@ -26,12 +27,14 @@ def job(logger):
                 log = alert["alert_id"] + " was triggered :)"
                 logger.info(log)
                 #send email
+                send_email(alert["email"], alert["alert_id"], alert["targetPrice"])
         else:
             if alert["targetPrice"]  >= get_bitcoin_price():
                 update_alert_and_user(alert)
                 log = alert["alert_id"] + " was triggered :)"
                 logger.info(log)
                 #send email
+                send_email(alert["email"], alert["alert_id"], alert["targetPrice"])
 
 
 def execute_job(logger):
